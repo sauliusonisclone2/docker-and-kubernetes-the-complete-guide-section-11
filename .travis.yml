@@ -11,7 +11,6 @@ before_install:
 script:
   - docker run -e CI=true sauliusonis/react-test npm test
 
-
 after_success:
   - docker build -t sauliusonis/multi-client ./client
   - docker build -t sauliusonis/multi-nginx ./nginx
@@ -22,3 +21,15 @@ after_success:
   - docker push sauliusonis/multi-nginx
   - docker push sauliusonis/multi-server
   - docker push sauliusonis/multi-worker
+
+deploy:
+  provider: elasticbeanstalk
+  region: 'eu-west-1'
+  app: 'multi-docker'
+  env: 'MultiDocker-env'
+  bucket_name: 'elasticbeanstalk-eu-west-1-467667289006'
+  bucket_path: 'docker-multi'
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
